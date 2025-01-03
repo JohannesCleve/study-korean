@@ -1,25 +1,35 @@
-name: Build and Deploy
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
-      - master
+      - main  # or master, depending on your default branch name
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # or whatever version you're using
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build and deploy
+      - name: Build
+        run: npm run build
+
+      - name: Move files
         run: |
-          npm run build
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Deploy to GitHub Pages"
-          git push origin master:master
+          mv docs/browser/* docs/
+          rm -rf docs/browser
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs
+          branch: gh-pages
