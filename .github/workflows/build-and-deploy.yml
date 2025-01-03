@@ -23,10 +23,19 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Debug directory structure
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Directory contents:"
+          ls -la
+          echo "Docs directory contents:"
+          ls -la docs/
+
       - name: Move files
         run: |
-          mv docs/browser/* docs/
-          rm -rf docs/browser
+          cp -r docs/browser/* docs/ || echo "No browser directory found"
+          rm -rf docs/browser || echo "No browser directory to remove"
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
